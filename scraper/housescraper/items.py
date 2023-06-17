@@ -18,4 +18,5 @@ class HouseItem(scrapy.Item):
     address = scrapy.Field()
     price = scrapy.Field()
     upped = scrapy.Field()
+    image_url = scrapy.Field()
     details = scrapy.Field()

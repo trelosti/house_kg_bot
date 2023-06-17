@@ -5,8 +5,9 @@
 
 
 # useful for handling different item types with a single interface
+import pymongo
+from pymongo import MongoClient
 from itemadapter import ItemAdapter
-
 
 class HousescraperPipeline:
     def process_item(self, item, spider):
@@ -19,4 +20,20 @@ class HousescraperPipeline:
                 value = adapter.get(field_name)
                 adapter[field_name] = value[0].strip().strip("\n")
 
+        return item
+
+class MongoDBPipeline(object):
+    def process_item(self, item, spider):
+        uri = ""
+
+        connection = MongoClient(uri)
+        db = connection["house_kg"]
+        collection = db["house"]
+
+        valid = True
+        for data in item:
+            if not data:
+                valid = False
+        if valid:
+            collection.insert_one(dict(item))
         return item
