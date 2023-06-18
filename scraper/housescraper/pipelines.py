@@ -18,7 +18,8 @@ class HousescraperPipeline:
         for field_name in field_names:
             if field_name != 'link' and field_name != 'details':
                 value = adapter.get(field_name)
-                adapter[field_name] = value[0].strip().strip("\n")
+                if value[0] is not None:
+                    adapter[field_name] = value[0].strip().strip("\n")
 
         return item
 

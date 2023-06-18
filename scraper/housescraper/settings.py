@@ -64,7 +64,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
    "housescraper.pipelines.HousescraperPipeline": 300,
-   'housescraper.pipelines.MongoDBPipeline': 100
+   'housescraper.pipelines.MongoDBPipeline': 400
 }
 
 
