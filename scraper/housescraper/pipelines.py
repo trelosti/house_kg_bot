@@ -5,9 +5,9 @@
 
 
 # useful for handling different item types with a single interface
-import pymongo
 from pymongo import MongoClient
 from itemadapter import ItemAdapter
+from decouple import config
 
 class HousescraperPipeline:
     def process_item(self, item, spider):
@@ -18,14 +18,15 @@ class HousescraperPipeline:
         for field_name in field_names:
             if field_name != 'link' and field_name != 'details':
                 value = adapter.get(field_name)
-                if value[0] is not None:
-                    adapter[field_name] = value[0].strip().strip("\n")
+                if value is not True and value is not False:
+                    if value[0] is not None:
+                        adapter[field_name] = value[0].strip().strip("\n")
 
         return item
 
 class MongoDBPipeline(object):
     def process_item(self, item, spider):
-        uri = ""
+        uri = config('MONGODB_URI')
 
         connection = MongoClient(uri)
         db = connection["house_kg"]
@@ -36,5 +37,13 @@ class MongoDBPipeline(object):
             if not data:
                 valid = False
         if valid:
-            collection.insert_one(dict(item))
+            link = item.get("link")  # Get the link field from the item
+            if link:
+                existing_document = collection.find_one({"link": link})
+                if existing_document:
+                    # Update the existing document
+                    collection.update_one({"link": link}, {"$set": dict(item)})
+                else:
+                    # Insert a new document
+                    collection.insert_one(dict(item))
         return item

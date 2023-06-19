@@ -6,7 +6,11 @@ from housescraper.items import HouseItem
 class HousespiderSpider(scrapy.Spider):
     name = "housespider"
     allowed_domains = ["house.kg"]
-    start_urls = ["https://www.house.kg/kupit-kvartiru?rooms=2"]
+
+    def __init__(self, *args, **kwargs): 
+      super(HousespiderSpider, self).__init__(*args, **kwargs) 
+
+      self.start_urls = [kwargs.get('start_url')] 
 
     base_url = "https://www.house.kg"
 
@@ -38,8 +42,9 @@ class HousespiderSpider(scrapy.Spider):
         house_item['address'] =  response.css(".left .address::text").get(),
         house_item['price'] = response.css(".right .price-dollar::text").get(),
         house_item['upped'] =  upped_value if upped_value else "Не поднималось",
-        house_item['image_url'] = response.css('a[itemprop="image"]::attr(href)').extract_first(),
+        house_item['image'] = response.css('a[itemprop="image"]::attr(href)').extract_first(),
         house_item['details'] =  self.parse_house_details(response),
+        house_item['saved'] = False
         
         yield house_item
 
