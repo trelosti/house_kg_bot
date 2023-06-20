@@ -37,13 +37,5 @@ class MongoDBPipeline(object):
             if not data:
                 valid = False
         if valid:
-            link = item.get("link")  # Get the link field from the item
-            if link:
-                existing_document = collection.find_one({"link": link})
-                if existing_document:
-                    # Update the existing document
-                    collection.update_one({"link": link}, {"$set": dict(item)})
-                else:
-                    # Insert a new document
-                    collection.insert_one(dict(item))
+            collection.insert_one(dict(item))
         return item
