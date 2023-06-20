@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from bson.json_util import dumps
 from decouple import config
 import json
+import logging
 
 
 TOKEN = config('BOT_TOKEN')
@@ -13,10 +14,13 @@ TOKEN = config('BOT_TOKEN')
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot=bot)
 
+@dp.message_handler(commands=['start'])
+async def start_handler(message: types.Message):
+    await message.answer('Выберите количество комнат для квартиры.')
+
 @dp.message_handler(commands=['one'])
 async def update_handler(message: types.Message):
     delete_data()
-   
     subprocess.run(f'scrapy crawl housespider -a start_url={constants.ONE_ROOM_URL}', shell = True)
 
     json_data = get_data()
