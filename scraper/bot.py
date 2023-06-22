@@ -71,9 +71,13 @@ async def three_handler(message : types.Message):
 async def saved_handler(message : types.Message):
     json_data = get_saved_data()
 
-    for msg in json_data:
-        print(get_photo(msg))
-        await message.answer_photo(get_photo(msg), caption=format_json(msg), parse_mode="HTML", reply_markup=save_kb)
+    if not json_data:
+        await message.answer('У вас нет сохраненных объявлений')
+
+    else:
+        for msg in json_data:
+            print(get_photo(msg))
+            await message.answer_photo(get_photo(msg), caption=format_json(msg), parse_mode="HTML", reply_markup=save_kb)
 
 @dp.callback_query_handler(text='save')
 async def save_call(callback : types.CallbackQuery):
@@ -127,6 +131,7 @@ def get_saved_data():
     db = connection["house_kg"]
     collection = db["house"]
     cursor = collection.find({'saved': True})
+
     json_dumps = dumps(cursor)
     json_data = json.loads(json_dumps)
 
